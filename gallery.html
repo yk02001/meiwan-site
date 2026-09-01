@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!-- saved from url=(0038)gallery.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<title>GALLERY</title><meta property="og:site_name" content="Thank you for being a part of my life.">
+		<title>Thank you for being a part of my life. ── MEI and WAN getting married.</title><meta property="og:site_name" content="Thank you for being a part of my life.">
 <meta property="og:title" content="GALLERY">
 <meta property="og:description" content="幸福，不是長生不老，不是大魚大肉，不是權傾朝野。 幸福是每一個微小的生活願望達成。 當你想吃的時候有得吃，想被愛的時候有人來愛你。">
 <meta property="og:url" content="gallery.html">
@@ -217,55 +217,14 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
 }
 </style>
 <style>
-.mini-carousel {
-  position: relative;
-  max-width: 656px;
-  margin: 10px auto;
-  background: #111;
-  overflow: hidden;
-}
+.mini-carousel { position: relative; max-width: 656px; margin: 10px auto; background: #111; overflow: hidden; }
 .mc-track { width: 100%; }
-.mc-img {
-  width: 100%;
-  display: block;
-  max-height: 500px;
-  object-fit: contain;
-  background: #111;
-  transition: opacity 0.4s ease;
-}
-.mc-btn {
-  position: absolute;
-  background: rgba(0,0,0,0.55);
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  z-index: 5;
-}
-.mc-prev, .mc-next {
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 28px;
-  padding: 6px 14px;
-}
-.mc-prev { left: 8px; }
-.mc-next { right: 8px; }
-.mc-play {
-  top: 10px;
-  left: 10px;
-  font-size: 12px;
-  padding: 6px 12px;
-  font-weight: bold;
-}
-.mc-counter {
-  position: absolute;
-  bottom: 10px;
-  right: 14px;
-  color: #fff;
-  font-size: 12px;
-  background: rgba(0,0,0,0.5);
-  padding: 3px 8px;
-  font-family: Arial, sans-serif;
-}
+.mc-img { width: 100%; display: block; max-height: 500px; object-fit: contain; background: #111; transition: opacity 0.4s ease; }
+.mc-btn { position: absolute; background: rgba(0,0,0,0.55); color: #fff; border: none; cursor: pointer; z-index: 5; }
+.mc-prev, .mc-next { top: 50%; transform: translateY(-50%); font-size: 28px; padding: 6px 14px; }
+.mc-prev { left: 8px; } .mc-next { right: 8px; }
+.mc-play { top: 10px; left: 10px; font-size: 12px; padding: 6px 12px; font-weight: bold; }
+.mc-counter { position: absolute; bottom: 10px; right: 14px; color: #fff; font-size: 12px; background: rgba(0,0,0,0.5); padding: 3px 8px; font-family: Arial, sans-serif; }
 </style>
 <script>
 var mcState = {};
@@ -276,43 +235,20 @@ function mcInit(id) {
   mcStart(id);
 }
 function mcShow(id) {
-  var st = mcState[id];
-  var el = document.getElementById(id);
-  var img = el.querySelector('.mc-img');
+  var st = mcState[id]; var el = document.getElementById(id); var img = el.querySelector('.mc-img');
   img.style.opacity = 0;
-  setTimeout(function() {
-    img.src = 'photos/' + st.images[st.index];
-    img.style.opacity = 1;
-  }, 150);
+  setTimeout(function() { img.src = 'photos/' + st.images[st.index]; img.style.opacity = 1; }, 150);
   el.querySelector('.mc-cur').textContent = st.index + 1;
 }
-function mcStep(id, dir) {
-  var st = mcState[id];
-  st.index = (st.index + dir + st.images.length) % st.images.length;
-  mcShow(id);
-}
-function mcStart(id) {
-  var st = mcState[id];
-  if (st.timer) clearInterval(st.timer);
-  st.timer = setInterval(function() { mcStep(id, 1); }, 3500);
-}
+function mcStep(id, dir) { var st = mcState[id]; st.index = (st.index + dir + st.images.length) % st.images.length; mcShow(id); }
+function mcStart(id) { var st = mcState[id]; if (st.timer) clearInterval(st.timer); st.timer = setInterval(function() { mcStep(id, 1); }, 3500); }
 function mcToggle(id) {
-  var st = mcState[id];
-  var el = document.getElementById(id);
-  var btn = el.querySelector('.mc-play');
+  var st = mcState[id]; var el = document.getElementById(id); var btn = el.querySelector('.mc-play');
   st.playing = !st.playing;
-  if (st.playing) {
-    mcStart(id);
-    btn.textContent = 'Pause';
-  } else {
-    clearInterval(st.timer);
-    btn.textContent = 'Play';
-  }
+  if (st.playing) { mcStart(id); btn.textContent = 'Pause'; } else { clearInterval(st.timer); btn.textContent = 'Play'; }
 }
 window.addEventListener('load', function() {
-  document.querySelectorAll('.mini-carousel').forEach(function(el) {
-    mcInit(el.id);
-  });
+  document.querySelectorAll('.mini-carousel').forEach(function(el) { mcInit(el.id); });
 });
 </script>
 

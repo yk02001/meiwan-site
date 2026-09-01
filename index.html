@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!-- saved from url=(0026)index.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<title>ABOUT</title><meta property="og:site_name" content="Thank you for being a part of my life.">
+		<title>Thank you for being a part of my life. ── MEI and WAN getting married.</title><meta property="og:site_name" content="Thank you for being a part of my life.">
 <meta property="og:title" content="Thank you for being a part of my life.">
 <meta property="og:description" content="Thank you for ​being a part of my life.">
 <meta property="og:url" content="index.html">
@@ -226,24 +226,11 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
 <script>
 var ABOUT_LB_IMAGES = ["2018-10-24-10-04-44.png", "2018-10-24-10-06-28.png", "2018-10-24-10-04-55_1.png", "2018-10-11-7-01-54_1.png", "2018-10-11-6-56-21_1.png", "2018-10-11-7-02-22_1.png", "12232921-10205810169989047-1537034831565120017-o_2.jpg", "02_1.jpg", "05_1.jpg", "dsc-6943_1.jpg", "dsc05598-tc_1.jpg", "p62.png"];
 var aboutLbIndex = 0;
-function openAboutLB(i) {
-  aboutLbIndex = i;
-  showAboutLB();
-  document.getElementById('aboutLightbox').style.display = 'flex';
-}
-function showAboutLB() {
-  document.getElementById('aboutLbImg').src = './ABOUT_files/' + ABOUT_LB_IMAGES[aboutLbIndex];
-}
-function stepAboutLB(dir) {
-  aboutLbIndex = (aboutLbIndex + dir + ABOUT_LB_IMAGES.length) % ABOUT_LB_IMAGES.length;
-  showAboutLB();
-}
-function closeAboutLB() {
-  document.getElementById('aboutLightbox').style.display = 'none';
-}
-document.getElementById('aboutLightbox').addEventListener('click', function(e){
-  if (e.target === this) closeAboutLB();
-});
+function openAboutLB(i) { aboutLbIndex = i; showAboutLB(); document.getElementById('aboutLightbox').style.display = 'flex'; }
+function showAboutLB() { document.getElementById('aboutLbImg').src = './ABOUT_files/' + ABOUT_LB_IMAGES[aboutLbIndex]; }
+function stepAboutLB(dir) { aboutLbIndex = (aboutLbIndex + dir + ABOUT_LB_IMAGES.length) % ABOUT_LB_IMAGES.length; showAboutLB(); }
+function closeAboutLB() { document.getElementById('aboutLightbox').style.display = 'none'; }
+document.getElementById('aboutLightbox').addEventListener('click', function(e){ if (e.target === this) closeAboutLB(); });
 document.addEventListener('keydown', function(e){
   if (document.getElementById('aboutLightbox').style.display !== 'flex') return;
   if (e.key === 'Escape') closeAboutLB();
