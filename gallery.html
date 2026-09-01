@@ -217,62 +217,102 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
 }
 </style>
 <style>
-.simple-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 6px;
-  margin: 10px 0;
+.mini-carousel {
+  position: relative;
+  max-width: 656px;
+  margin: 10px auto;
+  background: #111;
+  overflow: hidden;
 }
-.simple-grid-fig { margin: 0; overflow: hidden; cursor: zoom-in; aspect-ratio: 1/1; background:#eee; }
-.simple-grid-fig img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.simple-lightbox {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.9);
-  display: none; align-items: center; justify-content: center; z-index: 99999;
+.mc-track { width: 100%; }
+.mc-img {
+  width: 100%;
+  display: block;
+  max-height: 500px;
+  object-fit: contain;
+  background: #111;
+  transition: opacity 0.4s ease;
 }
-.simple-lightbox.open { display: flex; }
-.simple-lightbox img { max-width: 92vw; max-height: 88vh; object-fit: contain; }
-.simple-lightbox button {
-  position: absolute; background: none; border: none; color: #fff;
-  font-size: 26px; cursor: pointer; opacity: 0.8;
+.mc-btn {
+  position: absolute;
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  z-index: 5;
 }
-.simple-lightbox button:hover { opacity: 1; }
-#slb-close { top: 20px; right: 28px; }
-#slb-prev { left: 18px; top: 50%; transform: translateY(-50%); font-size: 38px; }
-#slb-next { right: 18px; top: 50%; transform: translateY(-50%); font-size: 38px; }
+.mc-prev, .mc-next {
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 28px;
+  padding: 6px 14px;
+}
+.mc-prev { left: 8px; }
+.mc-next { right: 8px; }
+.mc-play {
+  top: 10px;
+  left: 10px;
+  font-size: 12px;
+  padding: 6px 12px;
+  font-weight: bold;
+}
+.mc-counter {
+  position: absolute;
+  bottom: 10px;
+  right: 14px;
+  color: #fff;
+  font-size: 12px;
+  background: rgba(0,0,0,0.5);
+  padding: 3px 8px;
+  font-family: Arial, sans-serif;
+}
 </style>
-<div class="simple-lightbox" id="simpleLightbox">
-  <button id="slb-close" onclick="closeLB()">&#10005;</button>
-  <button id="slb-prev" onclick="stepLB(-1)">&#8249;</button>
-  <img id="slb-img" src="" alt="">
-  <button id="slb-next" onclick="stepLB(1)">&#8250;</button>
-</div>
 <script>
-var GALLERY_SETS = {"grid1": ["02_4.jpg", "01_1.jpg", "03_1.jpg", "04_1.jpg", "05_4.jpg", "06_1.jpg", "07_1.jpg", "08.jpg", "09.jpg", "10-1.jpg", "10-2.jpg", "10-3.jpg", "10.jpg", "11.jpg", "12.jpg", "13.jpg", "14-1.jpg", "14.jpg", "15.jpg", "16.jpg", "17-1.jpg", "17.jpg", "18.jpg", "19.jpg", "20.jpg", "21.jpg", "img-6775.jpg", "23.jpg", "24.jpg", "25.jpg", "26.jpg", "27.jpg", "28-1.jpg", "28.jpg", "29-1.jpg", "29.jpg", "30.jpg", "31.jpg", "32.jpg"], "grid2": ["dsc05597-tc.jpg", "dsc05595-tc_1.jpg", "img-1699-tc.jpg", "img-1718-tc.jpg", "dsc05596-tc.jpg", "img-1694-tc.jpg", "dsc05594-tc_1.jpg", "dsc05598-tc.jpg", "dsc05599-tc.jpg", "dsc05602-tc.jpg", "dsc05604-tc.jpg", "img-1741-tc.jpg", "img-1742-tc.jpg", "img-1707-tc.jpg", "dsc05605-tc.jpg", "dsc05606-tc.jpg", "dsc05607-tc.jpg", "dsc05608-tc.jpg", "dsc05609-tc.jpg", "dsc05610-tc.jpg", "dsc05611-tc.jpg", "dsc05613-tc.jpg", "dsc05614-tc.jpg", "dsc05600-tc_1.jpg", "dsc05615-tc.jpg", "dsc05618-tc.jpg", "dsc05620-tc.jpg", "dsc05626-tc.jpg", "dsc05630-tc.jpg", "dsc05632-tc.jpg", "dsc05636-tc.jpg", "dsc05639-tc.jpg", "dsc05642-tc.jpg", "dsc05643-tc.jpg", "dsc05648-tc.jpg", "dsc05650-tc.jpg", "img-1714-tc.jpg", "img-1744-tc.jpg", "img-1745-tc.jpg", "dsc05655-tc.jpg", "dsc05658-tc.jpg", "dsc05661-tc.jpg", "dsc05664-tc.jpg", "dsc05666-tc.jpg", "dsc05667-tc.jpg", "dsc05672-tc.jpg", "dsc05674-tc.jpg", "dsc05675-tc.jpg", "dsc05676-tc.jpg", "dsc05678-tc.jpg", "dsc05681-tc.jpg", "dsc05683-tc.jpg", "dsc05684-tc.jpg", "dsc05687-tc.jpg", "dsc05688-tc.jpg", "dsc05689-tc.jpg", "img-1720-tc.jpg", "img-1728-tc.jpg", "dsc05691-tc.jpg", "dsc05693-tc.jpg", "dsc05694-tc.jpg", "dsc05711-tc.jpg", "018892510031.jpg", "dsc05716-tc.jpg", "dsc05721-tc.jpg", "dsc05723-tc.jpg", "dsc05698-tc_1.jpg", "img-1693-tc.jpg", "dsc05717-tc.jpg", "8913298970606.jpg", "47048405-782587392079009-6624098644389789696-n.jpg"]};
-var slbSet = null, slbIndex = 0;
-function openLB(gridId, name) {
-  slbSet = GALLERY_SETS[gridId];
-  slbIndex = slbSet.indexOf(name);
-  showLB();
-  document.getElementById('simpleLightbox').classList.add('open');
+var mcState = {};
+function mcInit(id) {
+  var el = document.getElementById(id);
+  var images = JSON.parse(el.dataset.images);
+  mcState[id] = { images: images, index: 0, playing: true, timer: null };
+  mcStart(id);
 }
-function showLB() {
-  document.getElementById('slb-img').src = 'photos/' + slbSet[slbIndex];
+function mcShow(id) {
+  var st = mcState[id];
+  var el = document.getElementById(id);
+  var img = el.querySelector('.mc-img');
+  img.style.opacity = 0;
+  setTimeout(function() {
+    img.src = 'photos/' + st.images[st.index];
+    img.style.opacity = 1;
+  }, 150);
+  el.querySelector('.mc-cur').textContent = st.index + 1;
 }
-function stepLB(dir) {
-  slbIndex = (slbIndex + dir + slbSet.length) % slbSet.length;
-  showLB();
+function mcStep(id, dir) {
+  var st = mcState[id];
+  st.index = (st.index + dir + st.images.length) % st.images.length;
+  mcShow(id);
 }
-function closeLB() {
-  document.getElementById('simpleLightbox').classList.remove('open');
+function mcStart(id) {
+  var st = mcState[id];
+  if (st.timer) clearInterval(st.timer);
+  st.timer = setInterval(function() { mcStep(id, 1); }, 3500);
 }
-document.getElementById('simpleLightbox').addEventListener('click', function(e){
-  if (e.target === this) closeLB();
-});
-document.addEventListener('keydown', function(e){
-  if (!document.getElementById('simpleLightbox').classList.contains('open')) return;
-  if (e.key === 'Escape') closeLB();
-  if (e.key === 'ArrowLeft') stepLB(-1);
-  if (e.key === 'ArrowRight') stepLB(1);
+function mcToggle(id) {
+  var st = mcState[id];
+  var el = document.getElementById(id);
+  var btn = el.querySelector('.mc-play');
+  st.playing = !st.playing;
+  if (st.playing) {
+    mcStart(id);
+    btn.textContent = 'Pause';
+  } else {
+    clearInterval(st.timer);
+    btn.textContent = 'Play';
+  }
+}
+window.addEventListener('load', function() {
+  document.querySelectorAll('.mini-carousel').forEach(function(el) {
+    mcInit(el.id);
+  });
 });
 </script>
 
@@ -542,7 +582,13 @@ if (document.documentElement.appReady || (window.inEditor && window.inEditor()))
 <div class="wsite-spacer" style="height:50px;"></div>
 
 <div class="" data-sr-id="3" style="; visibility: visible;  -webkit-transform: translateY(0) scale(1); opacity: 1;transform: translateY(0) scale(1); opacity: 1;-webkit-transition: all, -webkit-transform 0.3s ease-in 0.3s, opacity 0.3s ease-in 0.3s; transition: all, transform 0.3s ease-in 0.3s, opacity 0.3s ease-in 0.3s; "><div style="height:20px;overflow:hidden"></div>
-<div class="simple-grid" id="grid1"><figure class="simple-grid-fig" onclick="openLB('grid1','02_4.jpg')"><img src="photos/02_4.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','01_1.jpg')"><img src="photos/01_1.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','03_1.jpg')"><img src="photos/03_1.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','04_1.jpg')"><img src="photos/04_1.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','05_4.jpg')"><img src="photos/05_4.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','06_1.jpg')"><img src="photos/06_1.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','07_1.jpg')"><img src="photos/07_1.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','08.jpg')"><img src="photos/08.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','09.jpg')"><img src="photos/09.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','10-1.jpg')"><img src="photos/10-1.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','10-2.jpg')"><img src="photos/10-2.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','10-3.jpg')"><img src="photos/10-3.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','10.jpg')"><img src="photos/10.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','11.jpg')"><img src="photos/11.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','12.jpg')"><img src="photos/12.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','13.jpg')"><img src="photos/13.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','14-1.jpg')"><img src="photos/14-1.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','14.jpg')"><img src="photos/14.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','15.jpg')"><img src="photos/15.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','16.jpg')"><img src="photos/16.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','17-1.jpg')"><img src="photos/17-1.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','17.jpg')"><img src="photos/17.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','18.jpg')"><img src="photos/18.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','19.jpg')"><img src="photos/19.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','20.jpg')"><img src="photos/20.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','21.jpg')"><img src="photos/21.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','img-6775.jpg')"><img src="photos/img-6775.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','23.jpg')"><img src="photos/23.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','24.jpg')"><img src="photos/24.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','25.jpg')"><img src="photos/25.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','26.jpg')"><img src="photos/26.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','27.jpg')"><img src="photos/27.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','28-1.jpg')"><img src="photos/28-1.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','28.jpg')"><img src="photos/28.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','29-1.jpg')"><img src="photos/29-1.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','29.jpg')"><img src="photos/29.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','30.jpg')"><img src="photos/30.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','31.jpg')"><img src="photos/31.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid1','32.jpg')"><img src="photos/32.jpg" loading="lazy" alt=""></figure></div>
+<div class="mini-carousel" id="car1" data-images='["02_4.jpg", "01_1.jpg", "03_1.jpg", "04_1.jpg", "05_4.jpg", "06_1.jpg", "07_1.jpg", "08.jpg", "09.jpg", "10-1.jpg", "10-2.jpg", "10-3.jpg", "10.jpg", "11.jpg", "12.jpg", "13.jpg", "14-1.jpg", "14.jpg", "15.jpg", "16.jpg", "17-1.jpg", "17.jpg", "18.jpg", "19.jpg", "20.jpg", "21.jpg", "img-6775.jpg", "23.jpg", "24.jpg", "25.jpg", "26.jpg", "27.jpg", "28-1.jpg", "28.jpg", "29-1.jpg", "29.jpg", "30.jpg", "31.jpg", "32.jpg"]'>
+  <div class="mc-track"><img class="mc-img" src="photos/02_4.jpg" alt=""></div>
+  <button class="mc-btn mc-prev" onclick="mcStep('car1',-1)">&#8249;</button>
+  <button class="mc-btn mc-next" onclick="mcStep('car1',1)">&#8250;</button>
+  <button class="mc-btn mc-play" onclick="mcToggle('car1')">Pause</button>
+  <div class="mc-counter"><span class="mc-cur">1</span> / 39</div>
+</div>
 
 <div style="height:20px;overflow:hidden"></div></div>
 
@@ -726,7 +772,13 @@ if (document.documentElement.appReady || (window.inEditor && window.inEditor()))
 <div class="wsite-spacer" style="height:50px;"></div>
 
 <div class="sr-nodelist" data-sr-id="10" style="; visibility: visible;  -webkit-transform: translateY(-10px) scale(1); opacity: 0;transform: translateY(-10px) scale(1); opacity: 0;"><div style="height:20px;overflow:hidden"></div>
-<div class="simple-grid" id="grid2"><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05597-tc.jpg')"><img src="photos/dsc05597-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05595-tc_1.jpg')"><img src="photos/dsc05595-tc_1.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','img-1699-tc.jpg')"><img src="photos/img-1699-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','img-1718-tc.jpg')"><img src="photos/img-1718-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05596-tc.jpg')"><img src="photos/dsc05596-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','img-1694-tc.jpg')"><img src="photos/img-1694-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05594-tc_1.jpg')"><img src="photos/dsc05594-tc_1.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05598-tc.jpg')"><img src="photos/dsc05598-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05599-tc.jpg')"><img src="photos/dsc05599-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05602-tc.jpg')"><img src="photos/dsc05602-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05604-tc.jpg')"><img src="photos/dsc05604-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','img-1741-tc.jpg')"><img src="photos/img-1741-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','img-1742-tc.jpg')"><img src="photos/img-1742-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','img-1707-tc.jpg')"><img src="photos/img-1707-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05605-tc.jpg')"><img src="photos/dsc05605-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05606-tc.jpg')"><img src="photos/dsc05606-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05607-tc.jpg')"><img src="photos/dsc05607-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05608-tc.jpg')"><img src="photos/dsc05608-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05609-tc.jpg')"><img src="photos/dsc05609-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05610-tc.jpg')"><img src="photos/dsc05610-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05611-tc.jpg')"><img src="photos/dsc05611-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05613-tc.jpg')"><img src="photos/dsc05613-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05614-tc.jpg')"><img src="photos/dsc05614-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05600-tc_1.jpg')"><img src="photos/dsc05600-tc_1.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05615-tc.jpg')"><img src="photos/dsc05615-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05618-tc.jpg')"><img src="photos/dsc05618-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05620-tc.jpg')"><img src="photos/dsc05620-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05626-tc.jpg')"><img src="photos/dsc05626-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05630-tc.jpg')"><img src="photos/dsc05630-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05632-tc.jpg')"><img src="photos/dsc05632-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05636-tc.jpg')"><img src="photos/dsc05636-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05639-tc.jpg')"><img src="photos/dsc05639-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05642-tc.jpg')"><img src="photos/dsc05642-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05643-tc.jpg')"><img src="photos/dsc05643-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05648-tc.jpg')"><img src="photos/dsc05648-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05650-tc.jpg')"><img src="photos/dsc05650-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','img-1714-tc.jpg')"><img src="photos/img-1714-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','img-1744-tc.jpg')"><img src="photos/img-1744-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','img-1745-tc.jpg')"><img src="photos/img-1745-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05655-tc.jpg')"><img src="photos/dsc05655-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05658-tc.jpg')"><img src="photos/dsc05658-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05661-tc.jpg')"><img src="photos/dsc05661-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05664-tc.jpg')"><img src="photos/dsc05664-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05666-tc.jpg')"><img src="photos/dsc05666-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05667-tc.jpg')"><img src="photos/dsc05667-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05672-tc.jpg')"><img src="photos/dsc05672-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05674-tc.jpg')"><img src="photos/dsc05674-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05675-tc.jpg')"><img src="photos/dsc05675-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05676-tc.jpg')"><img src="photos/dsc05676-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05678-tc.jpg')"><img src="photos/dsc05678-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05681-tc.jpg')"><img src="photos/dsc05681-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05683-tc.jpg')"><img src="photos/dsc05683-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05684-tc.jpg')"><img src="photos/dsc05684-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05687-tc.jpg')"><img src="photos/dsc05687-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05688-tc.jpg')"><img src="photos/dsc05688-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05689-tc.jpg')"><img src="photos/dsc05689-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','img-1720-tc.jpg')"><img src="photos/img-1720-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','img-1728-tc.jpg')"><img src="photos/img-1728-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05691-tc.jpg')"><img src="photos/dsc05691-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05693-tc.jpg')"><img src="photos/dsc05693-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05694-tc.jpg')"><img src="photos/dsc05694-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05711-tc.jpg')"><img src="photos/dsc05711-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','018892510031.jpg')"><img src="photos/018892510031.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05716-tc.jpg')"><img src="photos/dsc05716-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05721-tc.jpg')"><img src="photos/dsc05721-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05723-tc.jpg')"><img src="photos/dsc05723-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05698-tc_1.jpg')"><img src="photos/dsc05698-tc_1.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','img-1693-tc.jpg')"><img src="photos/img-1693-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','dsc05717-tc.jpg')"><img src="photos/dsc05717-tc.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','8913298970606.jpg')"><img src="photos/8913298970606.jpg" loading="lazy" alt=""></figure><figure class="simple-grid-fig" onclick="openLB('grid2','47048405-782587392079009-6624098644389789696-n.jpg')"><img src="photos/47048405-782587392079009-6624098644389789696-n.jpg" loading="lazy" alt=""></figure></div>
+<div class="mini-carousel" id="car2" data-images='["dsc05597-tc.jpg", "dsc05595-tc_1.jpg", "img-1699-tc.jpg", "img-1718-tc.jpg", "dsc05596-tc.jpg", "img-1694-tc.jpg", "dsc05594-tc_1.jpg", "dsc05598-tc.jpg", "dsc05599-tc.jpg", "dsc05602-tc.jpg", "dsc05604-tc.jpg", "img-1741-tc.jpg", "img-1742-tc.jpg", "img-1707-tc.jpg", "dsc05605-tc.jpg", "dsc05606-tc.jpg", "dsc05607-tc.jpg", "dsc05608-tc.jpg", "dsc05609-tc.jpg", "dsc05610-tc.jpg", "dsc05611-tc.jpg", "dsc05613-tc.jpg", "dsc05614-tc.jpg", "dsc05600-tc_1.jpg", "dsc05615-tc.jpg", "dsc05618-tc.jpg", "dsc05620-tc.jpg", "dsc05626-tc.jpg", "dsc05630-tc.jpg", "dsc05632-tc.jpg", "dsc05636-tc.jpg", "dsc05639-tc.jpg", "dsc05642-tc.jpg", "dsc05643-tc.jpg", "dsc05648-tc.jpg", "dsc05650-tc.jpg", "img-1714-tc.jpg", "img-1744-tc.jpg", "img-1745-tc.jpg", "dsc05655-tc.jpg", "dsc05658-tc.jpg", "dsc05661-tc.jpg", "dsc05664-tc.jpg", "dsc05666-tc.jpg", "dsc05667-tc.jpg", "dsc05672-tc.jpg", "dsc05674-tc.jpg", "dsc05675-tc.jpg", "dsc05676-tc.jpg", "dsc05678-tc.jpg", "dsc05681-tc.jpg", "dsc05683-tc.jpg", "dsc05684-tc.jpg", "dsc05687-tc.jpg", "dsc05688-tc.jpg", "dsc05689-tc.jpg", "img-1720-tc.jpg", "img-1728-tc.jpg", "dsc05691-tc.jpg", "dsc05693-tc.jpg", "dsc05694-tc.jpg", "dsc05711-tc.jpg", "018892510031.jpg", "dsc05716-tc.jpg", "dsc05721-tc.jpg", "dsc05723-tc.jpg", "dsc05698-tc_1.jpg", "img-1693-tc.jpg", "dsc05717-tc.jpg", "8913298970606.jpg", "47048405-782587392079009-6624098644389789696-n.jpg"]'>
+  <div class="mc-track"><img class="mc-img" src="photos/dsc05597-tc.jpg" alt=""></div>
+  <button class="mc-btn mc-prev" onclick="mcStep('car2',-1)">&#8249;</button>
+  <button class="mc-btn mc-next" onclick="mcStep('car2',1)">&#8250;</button>
+  <button class="mc-btn mc-play" onclick="mcToggle('car2')">Pause</button>
+  <div class="mc-counter"><span class="mc-cur">1</span> / 71</div>
+</div>
 
 <div style="height:20px;overflow:hidden"></div></div>
 
